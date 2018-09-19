@@ -5,31 +5,31 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import system.requesthandle.RequestHandler;
-import system.service.UserService;
-import system.vo.LoginVO;
-import system.vo.RegistrationUserVO;
+import system.service.ScholarshipsService;
+import system.vo.ScholarshipsCreateVO;
+import system.vo.ScholarshipsUpdateVO;
 import system.vo.ResponseVO;
 
 import java.util.Date;
 
 @RestController
-@RequestMapping(path="/api/user")
-public class UserController {
+@RequestMapping(path="/api/scholarships")
+public class ScholarshipsController {
 
 
 	@Autowired
-	UserService userService;
+	ScholarshipsService scholarshipsService;
 
 	@RequestMapping(value = "/create",
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<ResponseVO> registrationUser(@RequestBody RegistrationUserVO registrationUserVO) {
+	public ResponseEntity<ResponseVO> registrationUser(@RequestBody ScholarshipsCreateVO scholarshipsCreateVO) {
 		RequestHandler handler = new RequestHandler() {
 			@Override
 			public Object processRequest() {
-				return userService.userRegistration(registrationUserVO);
+				return scholarshipsService.createScholarships(scholarshipsCreateVO);
 			}
 		};
 		return handler.getResult();
@@ -44,7 +44,7 @@ public class UserController {
 		RequestHandler handler = new RequestHandler() {
 			@Override
 			public Object processRequest() {
-				return userService.deleteUser(secureId);
+				return scholarshipsService.deleteCountry(secureId);
 			}
 		};
 		return handler.getResult();
@@ -56,11 +56,11 @@ public class UserController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<ResponseVO> updateUser(@RequestParam (value = "secureId", required = true) String secureId,
-												 @RequestBody RegistrationUserVO registrationUserVO) {
+												 @RequestBody ScholarshipsUpdateVO scholarshipsUpdateVO) {
 		RequestHandler handler = new RequestHandler() {
 			@Override
 			public Object processRequest() {
-				return userService.updateUser(secureId , registrationUserVO);
+				return scholarshipsService.updateCountry(scholarshipsUpdateVO, secureId);
 			}
 		};
 		return handler.getResult();
@@ -74,37 +74,7 @@ public class UserController {
 		RequestHandler handler = new RequestHandler() {
 			@Override
 			public Object processRequest() {
-				return userService.listUser();
-			}
-		};
-		return handler.getResult();
-	}
-
-	@RequestMapping(value = "/login",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public ResponseEntity<ResponseVO> login(@RequestBody LoginVO loginVO) {
-		RequestHandler handler = new RequestHandler() {
-			@Override
-			public Object processRequest() {
-				return userService.userLogin(loginVO);
-			}
-		};
-		return handler.getResult();
-	}
-
-	@RequestMapping(value = "/logout",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public ResponseEntity<ResponseVO> logout(@RequestParam(value = "keyAccess", required = true) String keyAccess) {
-		RequestHandler handler = new RequestHandler() {
-			@Override
-			public Object processRequest() {
-				return userService.userLogout(keyAccess);
+				return scholarshipsService.listCountry();
 			}
 		};
 		return handler.getResult();

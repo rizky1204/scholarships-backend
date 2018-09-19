@@ -8,9 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import system.domain.Users;
 import system.exception.Exception;
 import system.repository.UserRepository;
-import system.vo.ListUsersVO;
-import system.vo.RegistrationUserVO;
-import system.vo.UsersVO;
+import system.requesthandle.StatusCode;
+import system.vo.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,6 +25,11 @@ public class UserService  {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    KeyAccessService keyAccessService;
+
+
 
     @Transactional
     public Boolean userRegistration(RegistrationUserVO vo){
@@ -47,10 +51,39 @@ public class UserService  {
         user.setEmail(vo.getEmail());
         user.setPassword(generatePassword);
         user.setScholarships(false);
+        user.setKeyAccess(randomKey());
         userRepository.save(user);
 
         return  Boolean.TRUE;
 
+    }
+
+    public ResponseVO userLogin(LoginVO loginVO){
+        ResponseVO vo = new ResponseVO();
+        Users user = userRepository.findByUserName(loginVO.getUsername());
+        if(user == null){
+            throw new Exception("username tidak terdaftar");
+        }
+
+        String matchingPasword =  password(loginVO.getPassword());
+        if(user.getPassword().equalsIgnoreCase(matchingPasword)){
+            LoginResponseVO loginResponseVO = new LoginResponseVO();
+            loginResponseVO.setUserName(loginVO.getUsername());
+            loginResponseVO.setKeyAccess(user.getKeyAccess());
+            vo.setResponse(StatusCode.OK.name());
+            vo.setResult(loginResponseVO);
+        }else{
+            vo.setResponse(StatusCode.ERROR.name());
+            vo.setResult("Password salah");
+        }
+        return vo;
+    }
+
+    public Boolean userLogout(String keyAccess){
+        Users user =  keyAccessService.checkKeyAccess(keyAccess);
+        user.setKeyAccess(randomKey());
+        userRepository.save(user);
+        return Boolean.TRUE;
     }
 
     @Transactional

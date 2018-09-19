@@ -27,6 +27,9 @@ public class Users extends Base {
     @Column(name = "SCOLARSHIP")
     private Boolean scholarships;
 
+    @Column(name = "KEY_ACCESS")
+    private String keyAccess;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "USERS")
 //    private Users users;
